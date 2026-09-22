@@ -1,0 +1,32 @@
+name: Organize LeetSync submissions
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  organize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Organize new LeetSync folders
+        run: python scripts/organize_leetsync.py
+
+      - name: Commit pattern organization
+        run: |
+          if git diff --quiet; then
+            echo "No pattern organization needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: organize LeetSync submission by DSA pattern"
+          git push
